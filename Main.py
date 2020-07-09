@@ -147,5 +147,5 @@ client.run('NzI0NDg3NDE2MjUyOTg5NTEx.XvGHUQ.ZJM8Ojq4DtE20CQeNf4TC7rTN4M')
 """
 Aula 7 - Cogs
 Aula 8 - First comment interessante
-Aula 12 - Prefixos personalizáveis
+Aula 12 - Prefixos personalizáveis.
 """
