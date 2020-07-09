@@ -142,7 +142,7 @@ async def unban(ctx, *, member):  # esse membro não está no servidor
             return
 """
 
-client.run('NzI0NDg3NDE2MjUyOTg5NTEx.XvGHUQ.ZJM8Ojq4DtE20CQeNf4TC7rTN4M')
+client.run('')
 
 """
 Aula 7 - Cogs
