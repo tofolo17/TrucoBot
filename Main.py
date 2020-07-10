@@ -11,7 +11,7 @@ client = commands.Bot(command_prefix='!')
 async def on_ready():
     print('bot is ready')
     status_list = ['o zap na testa do bêbado', 'truco consigo mesmo',
-                   'a mesa do bar pela janela', 'um 4 depois de ter pedido 12']
+                   'a mesa do bar pela janela', 'um 4 depois de ter pedido 12']  # |!help
     cont = 0
     while True:
         status = status_list[cont]
@@ -24,13 +24,45 @@ async def on_ready():
 
 
 @client.event
-async def on_member_join(member):
-    print(f'{member} has joined the served.')
+async def on_guild_join(guild):
+    for channel in guild.text_channels:
+        if channel.permissions_for(guild.me).send_messages:
+            await channel.send('Cheguei rapaziada!')
+        break
 
 
-@client.event
-async def on_member_remove(member):
-    print(f'{member} has left the server.')
+# Commands
+@client.command()
+async def truco(ctx, *, member: discord.Member = None):
+    if member is None:  # Transformar em lista de opções
+        guild_categories, verified_txt_channels = [], []
+        guild = ctx.message.guild
+        member = ctx.message.author
+        overwrites = {
+            guild.default_role: discord.PermissionOverwrite(read_messages=False),
+            member: discord.PermissionOverwrite(read_messages=True)
+        }
+        for category in guild.categories:
+            guild_categories.append(category.name)
+        if "Mesa de bar" not in guild_categories:
+            new_category = await guild.create_category('Mesa de bar')
+            await guild.create_text_channel(f'Cartas do {ctx.message.author}', overwrites=overwrites,
+                                            category=new_category)
+            await ctx.send('Acha que ganha de mim? Não fode. Entre no canal de texto com seu nome, zé.')
+        else:
+            for channel in guild.text_channels:
+                verified_txt_channels.append(channel.name)
+            if f'cartas-do-{member.name.lower()}{member.discriminator}' not in verified_txt_channels:
+                for category in guild.categories:
+                    if category.name == 'Mesa de bar':
+                        await guild.create_text_channel(f'Cartas do {ctx.message.author}', overwrites=overwrites,
+                                                        category=category)
+                        await ctx.send('Acha que ganha de mim? Não fode. Entre no canal de texto com seu nome, zé.')
+            else:
+                await ctx.send("Suas cartas já foram entregues! "
+                               "Verifique a existência do canal de texto com seu nome!")
+    else:
+        print('*')
 
 
 @client.event
@@ -39,113 +71,4 @@ async def on_command_error(ctx, error):
         await ctx.send('Não sei o que fazer com isso, parça.')
 
 
-# Commands
-@client.command()
-async def ping(ctx):
-    await ctx.send(f"Pong! {round(client.latency * 1000)}ms")
-
-
-@client.command(aliases=['8ball', 'eightball'])
-async def _8ball(ctx, *, question):
-    responses = ['Probably',
-                 'I would not be so sure about that.',
-                 'My answer is no.',
-                 'Probably not',
-                 'Of course!',
-                 'Why not?',
-                 'My answer is yes.',
-                 'This is true, and it will stay like that.',
-                 'Not even in a million years.',
-                 'I mean, I do not see the point in saying no.',
-                 'Why this question? The answer is a definitive no.',
-                 'As my grandma used to say... no.',
-                 'As my great great grandfather used to say... what even is this question?',
-                 'I do not know.',
-                 'Sources say no.']
-    await ctx.send(f'Question: {question}\nAnswer: {random.choice(responses)}')
-
-
-@_8ball.error
-async def _8ball_error(ctx, error):
-    if isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send('Falta a pergunta, cabeção.')
-
-
-@client.command()
-@commands.has_permissions(manage_messages=True)
-async def clear(ctx, amount=10):
-    await ctx.channel.purge(limit=amount + 1)
-
-
-@clear.error
-async def clear_error(ctx, error):
-    if isinstance(error, commands.MissingPermissions):
-        await ctx.send('Lhe falta poder!')
-
-
-@client.command()
-async def porn(ctx):
-    pages_list = ['xvideos', 'beeg', 'pornhub']
-    sufix_list = ['/new/', '/page/', '/video?page=']
-    page = random.choice(pages_list)
-    sufix = 0
-    for element in pages_list:
-        if page == element:
-            await ctx.send(f'https://{page}.com{sufix_list[sufix]}{random.randint(1, 100)}')
-        else:
-            sufix += 1
-
-
-@client.command()
-async def truco(ctx):
-    guild_categories = []
-    guild = ctx.message.guild
-    member = ctx.message.author
-    overwrites = {
-        guild.default_role: discord.PermissionOverwrite(read_messages=False),
-        member: discord.PermissionOverwrite(read_messages=True)
-    }
-    for category in guild.categories:
-        guild_categories.append(category.name)
-    if "Mesa de bar" not in guild_categories:
-        new_category = await guild.create_category('Mesa de bar')
-        await guild.create_text_channel(f'Cartas do {ctx.message.author}', overwrites=overwrites, category=new_category)
-    else:
-        for category in guild.categories:
-            if category.name == 'Mesa de bar':
-                await guild.create_text_channel(f'Cartas do {ctx.message.author}', overwrites=overwrites,
-                                                category=category)
-
-
-"""
-@client.command()
-async def kick(ctx, member: discord.Member, *, reason=None):
-    await member.kick(reason=reason)
-    await ctx.send(f'Kicked: {member.mention}')
-    
-
-@client.command()
-async def ban(ctx, member: discord.Member, *, reason=None):
-    await member.ban(reason=reason)
-    await ctx.send(f'Banned: {member.mention}')
-    
-    
-@client.command()
-async def unban(ctx, *, member):  # esse membro não está no servidor
-    banned_users = await ctx.guild.bans()
-    member_name, member_discriminator = member.split('#')
-    for ban_entry in banned_users:
-        user = ban_entry.user
-        if(user.name, user.discriminator) == (member_name, member_discriminator):
-            await ctx.guild.unban(user)
-            await ctx.send(f'Unbanned {user.mention}')
-            return
-"""
-
-client.run('')
-
-"""
-Aula 7 - Cogs
-Aula 8 - First comment interessante
-Aula 12 - Prefixos personalizáveis
-"""
+client.run('TOKEN')
