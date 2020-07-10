@@ -70,4 +70,4 @@ async def on_command_error(ctx, error):
         await ctx.send('Não sei o que fazer com isso, parça.')
 
 
-client.run('TOKEN')
+client.run('Token')
