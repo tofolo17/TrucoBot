@@ -41,7 +41,7 @@ while total_p1 < 12 or total_p2 < 12:
         player_cards = get_cards(inverted_card_values, inverted_card_suits)
         bot_cards = get_cards(inverted_card_values, inverted_card_suits, flipped_card)
 
-        # Cartas e opções
+        # Cards and Options
         print('Suas cartas: ')
         for i in range(len(player_cards)):
             print(f'{i + 1}°: {player_cards[i]}')
