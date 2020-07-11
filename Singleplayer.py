@@ -26,11 +26,11 @@ inverted_card_suits = {v: k for k, v in card_suits.items()}
 
 # Game loop
 total_p1 = total_p2 = 0
-while total_p1 < 12 or total_p2 < 12:
+while total_p1 < 12 and total_p2 < 12:
     print(f'Placar geral: {total_p1} x {total_p2}\n')
     print('Nova rodada')
     round_p1 = round_p2 = 0
-    while round_p1 < 2 or round_p2 < 2:
+    while round_p1 < 2 and round_p2 < 2:
 
         # Flipped card and shackle
         flipped_card = randint(1, 10)
