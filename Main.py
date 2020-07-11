@@ -30,6 +30,15 @@ async def on_guild_join(guild):
         break
 
 
+@client.event
+async def on_guild_channel_create(channel):
+    try:
+        await channel.send('Bora!')
+        # play()
+    except (ValueError, Exception):
+        pass
+
+
 # Commands
 @client.command()
 async def truco(ctx, *, member: discord.Member = None):
@@ -64,10 +73,24 @@ async def truco(ctx, *, member: discord.Member = None):
         print('*')
 
 
+@client.command()
+async def leave(ctx):
+    cont2 = 0
+    member = ctx.message.author
+    channel = ctx.message.channel
+    if channel.name == f'cartas-do-{member.name.lower()}{member.discriminator}':
+        await channel.delete()
+        for text_channel in ctx.message.guild.text_channels:
+            if text_channel.category == channel.category:
+                cont2 += 1
+        if cont2 == 0:
+            await channel.category.delete()
+
+
 @client.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         await ctx.send('Não sei o que fazer com isso, parça.')
 
 
-client.run('TOKEN')
+client.run('Token')
