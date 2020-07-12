@@ -66,11 +66,12 @@ while total_p < 12 and total_b < 12:
                 if result == 1:
                     round_p += 1
                     first_point = 'player did first'
-                    conditional = 'p starts'
+                    conditional = 'p starts'  # Até aqui, tudo funciona
                 elif result == 2:
                     round_p += 1
                     round_b += 1
                     conditional = 'play biggest'
+                    exit()
                 else:
                     round_b += 1
                     first_point = 'bot did first'
@@ -87,14 +88,16 @@ while total_p < 12 and total_b < 12:
                         round_b += 1
                         conditional = 'who did first'
                 elif conditional == 'b starts':
-                    result = bot_plays(inverted_card_values, inverted_card_suits, bot_cards, player_cards)
+                    result = bot_plays(inverted_card_values, inverted_card_suits, bot_cards, player_cards,
+                                       did_first=True)
                     if result == 2 or result == 3:
                         get_points(round_b, total_b)
                     else:
                         round_p += 1
                     conditional = 'who did first'
+                    exit()
                 elif conditional == 'play biggest':
-                    result = get_bigger(inverted_card_suits, inverted_card_suits, bot_cards, player_cards)
+                    result = compare_highest_cards(inverted_card_suits, inverted_card_suits, bot_cards, player_cards)
                     if result == 1:
                         get_points(round_p, total_p)
                     else:

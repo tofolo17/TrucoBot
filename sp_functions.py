@@ -19,18 +19,53 @@ def get_cards(global_card_values, global_card_suits, flipped_card=0):
     return entity_cards
 
 
-def bot_plays(global_card_values, global_card_suits, bot_cards, player_cards):
+def bot_plays(global_card_values, global_card_suits, bot_cards, player_cards, comparative_card=None, did_first=None):
     print('\nMinha vez...')
+    consequence = 0
+    comparative_list = list(global_card_values.values())
+    comparative_list.reverse()
+
     if len(player_cards) == 3:
         chosen_card = bot_cards[randint(0, 1)]
         print(f'Eu jogo: {chosen_card}')
         bot_cards.remove(chosen_card)
         return player_plays(global_card_values, global_card_suits, bot_cards, player_cards, chosen_card)
-    elif len(player_cards) == 2:
-        print('Ainda não sei o que fazer\n')
+
+    elif len(player_cards) == 2:  # Issue: bot ganha -> bot 2 cartas e sem comparativo
+        if not did_first:
+            winnable_cards = []
+            possible_card = bot_cards[0]
+            enemy_power = comparative_list.index(comparative_card.split()[0])
+            for card in bot_cards:
+                if comparative_list.index(card.split()[0]) >= enemy_power:
+                    winnable_cards.append(card)
+            if len(winnable_cards) > 1:
+                if comparative_list.index(winnable_cards[0].split()[0]) >= 9 and len(winnable_cards) >= 2:
+                    print(f'Eu jogo: {possible_card}')
+                else:
+                    possible_card = winnable_cards[0]
+                    print(f'Eu jogo: {possible_card}')
+            else:
+                print(f'Eu jogo: {possible_card}')
+            bot_cards.remove(possible_card)
+            if len(player_cards) == len(bot_cards):
+                if comparative_list.index(comparative_card.split()[0]) > \
+                        comparative_list.index(possible_card.split()[0]):
+                    consequence = 1
+                    print('Você venceu.\n')
+                elif comparative_list.index(comparative_card.split()[0]) == \
+                        comparative_list.index(possible_card.split()[0]):
+                    consequence = 2
+                    print('Temos um empate!\n')
+                else:
+                    consequence = 3
+                    print('Eu venci!\n')
+        if did_first:  # Se a segunda é forte demais, esconde a de agora (mas ainda nao tenho a parada de esconder)
+            print('penis')  # Continuar daqui
+
     elif len(player_cards) == 1:
         print('Ainda não sei o que fazer\n')
-    pass
+    return consequence
 
 
 def player_plays(global_card_values, global_card_suits, bot_cards, player_cards, last_card=None):
@@ -64,23 +99,24 @@ def player_plays(global_card_values, global_card_suits, bot_cards, player_cards,
                     consequence = 3
                     print('Eu venci!\n')
             else:
-                return bot_plays(global_card_values, global_card_suits, bot_cards, player_cards)
+                return bot_plays(global_card_values, global_card_suits, bot_cards, player_cards, played_card)
     return consequence
 
 
-def get_bigger(global_card_values, global_card_suits, bot_cards, player_cards):
-    bot_biggest = player_biggest = 0
-    bot_card_numbers, player_card_numbers = [], []
+def get_highest_card(cards, comparative):
+    for card in cards:
+        card_number_list = []
+        if card.split()[0] in comparative:
+            card_number_list.append(comparative.index(card.split()[0]))
+        highest = max(card_number_list)
+        return highest
+
+
+def compare_highest_cards(global_card_values, global_card_suits, bot_cards, player_cards):
     comparative_list = list(global_card_values.values())
     comparative_list.reverse()
-    for card in bot_cards:
-        if card.split()[0] in comparative_list:
-            bot_card_numbers.append(comparative_list.index(card.split()[0]))
-        bot_biggest = max(bot_card_numbers)
-    for card in player_cards:
-        if card.split()[0] in comparative_list:
-            player_card_numbers.append(comparative_list.index(card.split()[0]))
-        player_biggest = max(player_card_numbers)
+    bot_biggest = get_highest_card(bot_cards, comparative_list)
+    player_biggest = get_highest_card(player_cards, comparative_list)
     if player_biggest > bot_biggest:
         return 1
     else:
