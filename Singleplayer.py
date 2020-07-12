@@ -1,4 +1,5 @@
 from sp_functions import *
+from time import sleep
 
 card_values = {
     '3': 10,
@@ -26,16 +27,17 @@ inverted_card_suits = {v: k for k, v in card_suits.items()}
 # Game loop
 total_p = total_b = 0
 while total_p < 12 and total_b < 12:
-    print(f'Placar geral: {total_p} x {total_b}\n')
-    print('Nova rodada')
+    print(f'Placar geral: {total_p} x {total_b}')
+    print('Nova rodada\n')
 
     # Game variables
     round_p = round_b = 0
-    conditional = first_point = ''
+    conditional = first_point = who_started = ''
+    draw_counter = 0
 
     # Flipped card and shackle
     flipped_card = randint(1, 10)
-    print(f'Vira: {inverted_card_values[flipped_card]} de {inverted_card_suits[randint(1, 4)]}\n')
+    print(f'Vira: {inverted_card_values[flipped_card]} de {inverted_card_suits[randint(1, 4)]}')
     shackle = inverted_card_values[1] if flipped_card == 10 else inverted_card_values[flipped_card + 1]
 
     # Distributing the cards
@@ -44,67 +46,75 @@ while total_p < 12 and total_b < 12:
 
     # Round loop
     while round_p < 2 and round_b < 2:
-        next_turn = False
 
-        # Turn loop
-        while not next_turn:
-            if round_p != 0 or round_b != 0:
-                print(f'Pontos nessa rodada: {round_p} x {round_b}\n')
+        if round_p != 0 or round_b != 0:
+            print(f'Pontos nessa rodada: {round_p} x {round_b}\n')
 
-            # Cards and options
+        # Cards and options
+        if not round_b == round_p == 1:
             print('Suas cartas: ')
             for i in range(len(player_cards)):
                 print(f'{i + 1}°: {player_cards[i]}')
             print('\n0: Truco\n9: Fugir')
 
-            # Who plays first in first and result of the round
-            if round_p == round_b == 0:
-                who_plays = randint(1, 2)
-                result = bot_plays(inverted_card_values, inverted_card_suits, bot_cards, player_cards) \
-                    if who_plays == 1 else player_plays(inverted_card_values, inverted_card_suits, bot_cards,
-                                                        player_cards)
+        # Who plays first in first and result of the round
+        if round_p == round_b == 0 or conditional == 'draw':
+            who_plays = randint(1, 2)
+            if who_plays == 1 or who_started == 'player':
+                result = bot_plays(inverted_card_values, inverted_card_suits, bot_cards, player_cards, did_first=True) \
+                    if conditional == 'draw' else \
+                    bot_plays(inverted_card_values, inverted_card_suits, bot_cards, player_cards)
+                who_started = 'bot'
+            else:
+                result = player_plays(inverted_card_values, inverted_card_suits, bot_cards, player_cards)
+                who_started = 'player'
+            if result == 1:
+                round_p += 1
+                first_point = 'player did first'
+                conditional = 'p starts'
+            elif result == 2:
+                conditional = 'draw'
+                draw_counter += 1
+                if draw_counter == 3:
+                    print('Ninguem pontuou!')
+                    round_p = round_b = 100
+            else:
+                round_b += 1
+                first_point = 'bot did first'
+                conditional = 'b starts'
+            next_turn = True
+
+        # Other rounds conditionals
+        else:
+            if conditional == 'p starts':
+                result = player_plays(inverted_card_values, inverted_card_suits, bot_cards, player_cards)
+                if result == 1 or result == 2:
+                    round_p += 1
+                    total_p += 1
+                else:
+                    round_b += 1
+                conditional = 'play biggest'
+            elif conditional == 'b starts':
+                result = bot_plays(inverted_card_values, inverted_card_suits, bot_cards, player_cards,
+                                   did_first=True)
+                if result == 2 or result == 3:
+                    round_b += 1
+                    total_b += 1
+                else:
+                    round_p += 1
+                conditional = 'play biggest'
+            else:
+                result = compare_highest_cards(inverted_card_values, inverted_card_suits, bot_cards, player_cards)
                 if result == 1:
                     round_p += 1
-                    first_point = 'player did first'
-                    conditional = 'p starts'  # Até aqui, tudo funciona
+                    total_p += 1
                 elif result == 2:
-                    round_p += 1
-                    round_b += 1
-                    conditional = 'play biggest'
-                    exit()
-                else:
-                    round_b += 1
-                    first_point = 'bot did first'
-                    conditional = 'b starts'
-                next_turn = True
-
-            # Other rounds conditionals
-            else:
-                if conditional == 'p starts':
-                    result = player_plays(inverted_card_values, inverted_card_suits, bot_cards, player_cards)
-                    if result == 1 or result == 2:
-                        get_points(round_p, total_p)
+                    if first_point == 'player did first':
+                        round_p += 1
+                        total_p += 1
                     else:
                         round_b += 1
-                        conditional = 'who did first'
-                elif conditional == 'b starts':
-                    result = bot_plays(inverted_card_values, inverted_card_suits, bot_cards, player_cards,
-                                       did_first=True)
-                    if result == 2 or result == 3:
-                        get_points(round_b, total_b)
-                    else:
-                        round_p += 1
-                    conditional = 'who did first'
-                    exit()
-                elif conditional == 'play biggest':
-                    result = compare_highest_cards(inverted_card_suits, inverted_card_suits, bot_cards, player_cards)
-                    if result == 1:
-                        get_points(round_p, total_p)
-                    else:
-                        get_points(round_b, total_b)
+                        total_b += 1
                 else:
-                    if first_point == 'player did first':
-                        get_points(round_p, total_p)
-                    else:
-                        get_points(round_b, total_b)
-                next_turn = True
+                    round_b += 1
+                    total_b += 1
