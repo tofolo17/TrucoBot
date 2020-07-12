@@ -61,7 +61,7 @@ def bot_plays(global_card_values, global_card_suits, bot_cards, player_cards, co
                     consequence = 3
                     print('Eu venci!\n')
         if did_first:  # Se a segunda é forte demais, esconde a de agora (mas ainda nao tenho a parada de esconder)
-            print('penis')  # Continuar daqui
+            print('nothing yet')  # Continuar daqui
 
     elif len(player_cards) == 1:
         print('Ainda não sei o que fazer\n')
