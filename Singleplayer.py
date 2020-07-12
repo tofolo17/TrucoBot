@@ -50,7 +50,8 @@ while total_p < 12 and total_b < 12:
         while not next_turn:
             if round_p != 0 or round_b != 0:
                 print(f'Pontos nessa rodada: {round_p} x {round_b}\n')
-            # Cartas e opções
+
+            # Cards and options
             print('Suas cartas: ')
             for i in range(len(player_cards)):
                 print(f'{i + 1}°: {player_cards[i]}')
