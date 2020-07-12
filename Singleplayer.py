@@ -25,7 +25,7 @@ inverted_card_suits = {v: k for k, v in card_suits.items()}
 
 # Game loop
 total_p = total_b = 0
-while total_p < 12 or total_b < 12:
+while total_p < 12 and total_b < 12:
     print(f'Placar geral: {total_p} x {total_b}\n')
     print('Nova rodada')
 
@@ -38,12 +38,12 @@ while total_p < 12 or total_b < 12:
     print(f'Vira: {inverted_card_values[flipped_card]} de {inverted_card_suits[randint(1, 4)]}\n')
     shackle = inverted_card_values[1] if flipped_card == 10 else inverted_card_values[flipped_card + 1]
 
-    # Distributing  the cards
+    # Distributing the cards
     player_cards = get_cards(inverted_card_values, inverted_card_suits)
     bot_cards = get_cards(inverted_card_values, inverted_card_suits, flipped_card)
 
     # Round loop
-    while round_p < 2 or round_b < 2:
+    while round_p < 2 and round_b < 2:
         next_turn = False
 
         # Turn loop
