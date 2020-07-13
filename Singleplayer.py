@@ -11,7 +11,7 @@ card_values = {
     '6': 3,
     '5': 2,
     '4': 1
-}
+}  # Sei lá ta tudo bugado
 
 card_suits = {
     'Paus': 4,
@@ -26,7 +26,7 @@ inverted_card_suits = {v: k for k, v in card_suits.items()}
 # Game loop
 total_p = total_b = 0
 while total_p < 12 and total_b < 12:
-    print(f'Placar geral: {total_p} x {total_b}')
+    print(f'\n--- Placar geral: {total_p} x {total_b} ---')
     print('Nova rodada\n')
 
     # Game variables
@@ -73,17 +73,25 @@ while total_p < 12 and total_b < 12:
 
             # First result analysis
             if result == 1:
-                round_p = up_points(round_p)
+                if draw_counter == 1:
+                    round_p += 2
+                else:
+                    round_p += 1
                 first_point = 'player did first'
                 conditional = 'p starts'
             elif result == 2:
                 conditional = 'draw'
                 draw_counter += 1
-                if draw_counter == 3:
+                if draw_counter == 2:
+                    conditional = 'play biggest'
+                elif draw_counter == 3:
                     print('Ninguem pontuou!')
                     round_p = round_b = 100
             else:
-                round_b = up_points(round_b)
+                if draw_counter == 1:
+                    round_b += 2
+                else:
+                    round_b += 1
                 first_point = 'bot did first'
                 conditional = 'b starts'
 
@@ -94,28 +102,34 @@ while total_p < 12 and total_b < 12:
             if conditional == 'p starts':
                 result = player_plays(inverted_card_values, inverted_card_suits, bot_cards, player_cards)
                 if result == 1 or result == 2:
-                    round_p, total_p = up_points(round_p, total_p)
+                    round_p += 1
+                    total_p += 1
                 else:
-                    round_b = up_points(round_b)
-                conditional = 'play biggest'
+                    round_b += 1
+                    conditional = 'play biggest'
             elif conditional == 'b starts':
                 result = bot_plays(inverted_card_values, inverted_card_suits, bot_cards, player_cards,
                                    did_first=True)
                 if result == 2 or result == 3:
-                    round_b, total_b = up_points(round_b, total_b)
+                    round_b += 1
+                    total_b += 1
                 else:
-                    round_p = up_points(round_p)
-                conditional = 'play biggest'
+                    round_p += 1
+                    conditional = 'play biggest'
 
             # if x win and after y win -- > get higher card // if draw --> x win because he did first
             else:
                 result = compare_highest_cards(inverted_card_values, inverted_card_suits, bot_cards, player_cards)
                 if result == 1:
-                    round_p, total_p = up_points(round_p, total_p)
+                    round_p += 1
+                    total_p += 1
                 elif result == 2:
                     if first_point == 'player did first':
-                        round_p, total_p = up_points(round_p, total_p)
+                        round_p += 1
+                        total_p += 1
                     else:
-                        round_b, total_b = up_points(round_b, total_b)
+                        round_b += 1
+                        total_b += 1
                 else:
-                    round_b, total_b = up_points(round_b, total_b)
+                    round_b += 1
+                    total_b += 1
