@@ -26,7 +26,7 @@ inverted_card_suits = {v: k for k, v in card_suits.items()}
 # Game loop
 total_p = total_b = 0
 while total_p < 12 and total_b < 12:
-    print(f'\n--- Placar geral: {total_p} x {total_b} ---')
+    print(f'--- Placar geral: {total_p} x {total_b} ---')
     print('Nova rodada\n')
 
     # Game variables
@@ -47,8 +47,8 @@ while total_p < 12 and total_b < 12:
     while round_p < 2 and round_b < 2:
 
         # Showing points
-        if round_p != 0 or round_b != 0:
-            print(f'Pontos nessa rodada: {round_p} x {round_b}\n')
+        if round_p != 0 or round_b != 0 and conditional != 'draw':
+            print(f'--- Pontos nessa rodada: {round_p} x {round_b} ---\n')
 
         # Cards and options
         if not round_b == round_p == 1:
@@ -67,14 +67,18 @@ while total_p < 12 and total_b < 12:
                     if conditional == 'draw' else \
                     bot_plays(inverted_card_values, inverted_card_suits, bot_cards, player_cards)
                 who_started = 'bot'
-            else:
+            elif who_plays == 2 or who_started == 'bot':
                 result = player_plays(inverted_card_values, inverted_card_suits, bot_cards, player_cards)
                 who_started = 'player'
+            else:
+                result = 0
 
             # First result analysis
             if result == 1:
                 if draw_counter == 1:
                     round_p += 2
+                    total_p += 1
+                    print('Empatamos a primeira, mas você levou a segunda. Logo, você ganha!')
                 else:
                     round_p += 1
                 first_point = 'player did first'
@@ -90,6 +94,8 @@ while total_p < 12 and total_b < 12:
             else:
                 if draw_counter == 1:
                     round_b += 2
+                    total_b += 1
+                    print('Empatamos a primeira, mas eu levei a segunda. Logo, eu ganho!')
                 else:
                     round_b += 1
                 first_point = 'bot did first'
@@ -104,6 +110,8 @@ while total_p < 12 and total_b < 12:
                 if result == 1 or result == 2:
                     round_p += 1
                     total_p += 1
+                    if result == 2:
+                        print('Como você fez a primeira, e agora empatamos, você ganha!')
                 else:
                     round_b += 1
                     conditional = 'play biggest'
@@ -113,6 +121,8 @@ while total_p < 12 and total_b < 12:
                 if result == 2 or result == 3:
                     round_b += 1
                     total_b += 1
+                    if result == 2:
+                        print('Como eu fiz a primeira, e agora empatamos, eu ganho!')
                 else:
                     round_p += 1
                     conditional = 'play biggest'
@@ -127,9 +137,11 @@ while total_p < 12 and total_b < 12:
                     if first_point == 'player did first':
                         round_p += 1
                         total_p += 1
+                        print('E como essa pessoa foi você, você ganha!')
                     else:
                         round_b += 1
                         total_b += 1
+                        print('E como eu fui essa pessoa (ou máquina), eu ganho!')
                 else:
                     round_b += 1
                     total_b += 1
