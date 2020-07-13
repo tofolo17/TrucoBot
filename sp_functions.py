@@ -133,3 +133,13 @@ def compare_highest_cards(global_card_values, global_card_suits, bot_cards, play
         return 2
     else:
         return 3
+
+
+def up_points(round_points=0, total_points=0):
+    if round_points and not total_points:
+        round_points += 1
+        return round_points
+    else:
+        round_points += 1
+        total_points += 1
+        return round_points, total_points
