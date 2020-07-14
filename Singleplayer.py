@@ -24,7 +24,7 @@ inverted_card_values = {v: k for k, v in card_values.items()}
 inverted_card_suits = {v: k for k, v in card_suits.items()}
 
 # Game loop
-total_p = total_b = 0
+total_p = total_b = who_plays = result = 0
 while total_p < 12 and total_b < 12:
     comparative_len = len(f'--- Placar geral: {total_p} x {total_b} ---')
     print('-' * comparative_len)
@@ -34,7 +34,7 @@ while total_p < 12 and total_b < 12:
 
     # Game variables
     round_p = round_b = draw_counter = 0
-    conditional = first_point = who_started = ''
+    conditional = first_point = ''
 
     # Flipped card and shackle
     flipped_card = randint(1, 10)
@@ -65,19 +65,14 @@ while total_p < 12 and total_b < 12:
 
             # Who plays first
             if draw_counter <= 2:
-                if who_plays == 1 or who_started == 'player':
+                if who_plays == 1:
                     result = bot_plays(inverted_card_values, inverted_card_suits, bot_cards, player_cards, draw=True) \
                         if conditional == 'draw' else bot_plays(inverted_card_values, inverted_card_suits, bot_cards,
                                                                 player_cards)
-                    who_started = 'bot'
-                elif who_plays == 2 or who_started == 'bot':
-                    result = player_plays(inverted_card_values, inverted_card_suits, bot_cards, player_cards)
-                    who_started = 'player'
+                    who_plays = 2
                 else:
-                    result = 0
-            else:
-                result = 0
-            who_plays = 0
+                    result = player_plays(inverted_card_values, inverted_card_suits, bot_cards, player_cards)
+                    who_plays = 1
 
             # First result analysis
             if result == 1:

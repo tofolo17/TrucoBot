@@ -32,8 +32,6 @@ def get_cards(global_card_values, global_card_suits, flipped_card=0):
 def bot_plays(global_card_values, global_card_suits, bot_cards, player_cards, comparative_card=None,
               did_first=None, draw=None):
 
-    # print('\n', bot_cards)
-
     # Bot "IA" variables
     comparative_list = list(global_card_values.values())
     comparative_list.reverse()
@@ -89,6 +87,8 @@ def bot_plays(global_card_values, global_card_suits, bot_cards, player_cards, co
                 else:
                     consequence = 3
                     print('\nEu venci.\n')
+            else:
+                return player_plays(global_card_values, global_card_suits, bot_cards, player_cards, possible_card)
 
         # If he did it first, he'll eliminate the weakest
         if did_first:
@@ -108,31 +108,35 @@ def player_plays(global_card_values, global_card_suits, bot_cards, player_cards,
     while True:
         try:
             player_choice = int(input('Sua opção: '))
-            if player_choice in card_opt + act_opt:
-                break
-            else:
-                print('Inválido, tente novamente.')
-        except (ValueError, IndexError):
-            print('Inválido. Tente novamente')
-    for card in card_opt:
-        if card == player_choice:
-            played_card = player_cards[card - 1]
-            print(f'Você jogou: {played_card}')
-            player_cards.pop(card - 1)
-            if len(player_cards) == len(bot_cards):
-                sleep(0.5)
-                if comparative_list.index(played_card.split()[0]) > comparative_list.index(last_card.split()[0]):
-                    consequence = 1
-                    print('\nVocê venceu.\n')
-                elif comparative_list.index(played_card.split()[0]) == comparative_list.index(last_card.split()[0]):
-                    consequence = 2
-                    print('\n--- Temos um empate! ---\n')
+            while True:
+                if player_choice in card_opt + act_opt:
+                    break
                 else:
-                    consequence = 3
-                    print('\nEu venci.\n')
-            else:
-                return bot_plays(global_card_values, global_card_suits, bot_cards, player_cards, played_card)
-    return consequence
+                    _ = 1/0
+            for card in card_opt:
+                if card == player_choice:
+                    played_card = player_cards[card - 1]
+                    print(f'Você jogou: {played_card}')
+                    player_cards.pop(card - 1)
+                    if len(player_cards) == len(bot_cards):
+                        sleep(0.5)
+                        if comparative_list.index(played_card.split()[0]) > \
+                                comparative_list.index(last_card.split()[0]):
+                            consequence = 1
+                            print('\nVocê venceu.\n')
+                        elif comparative_list.index(played_card.split()[0]) == \
+                                comparative_list.index(last_card.split()[0]):
+                            consequence = 2
+                            print('\n--- Temos um empate! ---\n')
+                        else:
+                            consequence = 3
+                            print('\nEu venci.\n')
+                    else:
+                        return bot_plays(global_card_values, global_card_suits, bot_cards, player_cards, played_card)
+                    break
+            return consequence
+        except(ValueError, IndexError, ZeroDivisionError):
+            print('Inválido. Tente novamente.')
 
 
 def get_highest_card(cards, comparative):
