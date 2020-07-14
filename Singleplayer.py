@@ -11,7 +11,7 @@ card_values = {
     '6': 3,
     '5': 2,
     '4': 1
-}  # Sei lá ta tudo bugado
+}
 
 card_suits = {
     'Paus': 4,
@@ -26,13 +26,15 @@ inverted_card_suits = {v: k for k, v in card_suits.items()}
 # Game loop
 total_p = total_b = 0
 while total_p < 12 and total_b < 12:
+    comparative_len = len(f'--- Placar geral: {total_p} x {total_b} ---')
+    print('-' * comparative_len)
     print(f'--- Placar geral: {total_p} x {total_b} ---')
+    print('-' * comparative_len)
     print('Nova rodada\n')
 
     # Game variables
-    round_p = round_b = 0
+    round_p = round_b = draw_counter = 0
     conditional = first_point = who_started = ''
-    draw_counter = 0
 
     # Flipped card and shackle
     flipped_card = randint(1, 10)
@@ -44,6 +46,7 @@ while total_p < 12 and total_b < 12:
     bot_cards = get_cards(inverted_card_values, inverted_card_suits, flipped_card)
 
     # Round loop
+    who_plays = 2 if (total_b + total_p) % 2 == 0 else 1
     while round_p < 2 and round_b < 2:
 
         # Showing points
@@ -51,34 +54,37 @@ while total_p < 12 and total_b < 12:
             print(f'--- Pontos nessa rodada: {round_p} x {round_b} ---\n')
 
         # Cards and options
-        if not round_b == round_p == 1:
+        if not draw_counter >= 2 and not conditional == 'play biggest':
             print('Suas cartas: ')
             for i in range(len(player_cards)):
                 print(f'{i + 1}°: {player_cards[i]}')
             print('\n0: Truco\n9: Fugir')
 
         # First conditional
-        if round_p == round_b == 0 or conditional == 'draw':
+        if round_p == round_b == 0:
 
             # Who plays first
-            who_plays = randint(1, 2)
-            if who_plays == 1 or who_started == 'player':
-                result = bot_plays(inverted_card_values, inverted_card_suits, bot_cards, player_cards, did_first=True) \
-                    if conditional == 'draw' else \
-                    bot_plays(inverted_card_values, inverted_card_suits, bot_cards, player_cards)
-                who_started = 'bot'
-            elif who_plays == 2 or who_started == 'bot':
-                result = player_plays(inverted_card_values, inverted_card_suits, bot_cards, player_cards)
-                who_started = 'player'
+            if draw_counter <= 2:
+                if who_plays == 1 or who_started == 'player':
+                    result = bot_plays(inverted_card_values, inverted_card_suits, bot_cards, player_cards, draw=True) \
+                        if conditional == 'draw' else bot_plays(inverted_card_values, inverted_card_suits, bot_cards,
+                                                                player_cards)
+                    who_started = 'bot'
+                elif who_plays == 2 or who_started == 'bot':
+                    result = player_plays(inverted_card_values, inverted_card_suits, bot_cards, player_cards)
+                    who_started = 'player'
+                else:
+                    result = 0
             else:
                 result = 0
+            who_plays = 0
 
             # First result analysis
             if result == 1:
                 if draw_counter == 1:
                     round_p += 2
                     total_p += 1
-                    print('Empatamos a primeira, mas você levou a segunda. Logo, você ganha!')
+                    print('Empatamos a primeira, mas você levou a segunda. Logo, você ganha!\n')
                 else:
                     round_p += 1
                 first_point = 'player did first'
@@ -89,13 +95,13 @@ while total_p < 12 and total_b < 12:
                 if draw_counter == 2:
                     conditional = 'play biggest'
                 elif draw_counter == 3:
-                    print('Ninguem pontuou!')
+                    print('Ninguem pontuou!\n')
                     round_p = round_b = 100
             else:
                 if draw_counter == 1:
                     round_b += 2
                     total_b += 1
-                    print('Empatamos a primeira, mas eu levei a segunda. Logo, eu ganho!')
+                    print('Empatamos a primeira, mas eu levei a segunda. Logo, eu ganho!\n')
                 else:
                     round_b += 1
                 first_point = 'bot did first'
@@ -111,18 +117,17 @@ while total_p < 12 and total_b < 12:
                     round_p += 1
                     total_p += 1
                     if result == 2:
-                        print('Como você fez a primeira, e agora empatamos, você ganha!')
+                        print('Como você fez a primeira, e agora empatamos, você ganha!\n')
                 else:
                     round_b += 1
                     conditional = 'play biggest'
             elif conditional == 'b starts':
-                result = bot_plays(inverted_card_values, inverted_card_suits, bot_cards, player_cards,
-                                   did_first=True)
+                result = bot_plays(inverted_card_values, inverted_card_suits, bot_cards, player_cards, did_first=True)
                 if result == 2 or result == 3:
                     round_b += 1
                     total_b += 1
                     if result == 2:
-                        print('Como eu fiz a primeira, e agora empatamos, eu ganho!')
+                        print('Como eu fiz a primeira, e agora empatamos, eu ganho!\n')
                 else:
                     round_p += 1
                     conditional = 'play biggest'
@@ -137,11 +142,11 @@ while total_p < 12 and total_b < 12:
                     if first_point == 'player did first':
                         round_p += 1
                         total_p += 1
-                        print('E como essa pessoa foi você, você ganha!')
+                        print('E como essa pessoa foi você, você ganha!\n')
                     else:
                         round_b += 1
                         total_b += 1
-                        print('E como eu fui essa pessoa (ou máquina), eu ganho!')
+                        print('E como eu fui essa pessoa (ou máquina), eu ganho!\n')
                 else:
                     round_b += 1
                     total_b += 1
