@@ -20,9 +20,6 @@ card_suits = {
     'Ouros': 1
 }
 
-inverted_card_values = {v: k for k, v in card_values.items()}
-inverted_card_suits = {v: k for k, v in card_suits.items()}
-
 # Game loop
 total_p = total_b = who_plays = result = 0
 while total_p < 12 and total_b < 12:
@@ -38,12 +35,30 @@ while total_p < 12 and total_b < 12:
 
     # Flipped card and shackle
     flipped_card = randint(1, 10)
-    print(f'Vira: {inverted_card_values[flipped_card]} de {inverted_card_suits[randint(1, 4)]}')
-    shackle = inverted_card_values[1] if flipped_card == 10 else inverted_card_values[flipped_card + 1]
+    print(f'Vira: {list(card_values.keys())[list(card_values.values()).index(flipped_card)]} de '
+          f'{list(card_suits.keys())[list(card_suits.values()).index(randint(1, 4))]}')
+    shackle = list(card_values.keys())[list(card_values.values()).index(1)] if flipped_card == 10 \
+        else list(card_values.keys())[list(card_values.values()).index(flipped_card + 1)]
+
+    # Reorganize the card_values based on the shackle
+    sorted_card_values = []
+    cont = 1
+    for key in card_values.keys():
+        if key == shackle:
+            del card_values[shackle]
+            card_values.update({str(shackle): 11})
+            break
+        cont += 1
+    inverted_card_values = {v - 1 if v > 11 - cont else v: k for k, v in card_values.items()}
+    for key in sorted(inverted_card_values):
+        sorted_card_values.append(list(inverted_card_values.values())[list(inverted_card_values.keys()).index(key)])
+    inverted_card_suits = {v: k for k, v in card_suits.items()}
+
+    print(sorted_card_values[10])  # Issue here
 
     # Distributing the cards
-    player_cards = get_cards(inverted_card_values, inverted_card_suits)
-    bot_cards = get_cards(inverted_card_values, inverted_card_suits, flipped_card)
+    player_cards = get_cards(sorted_card_values, inverted_card_suits)
+    bot_cards = get_cards(sorted_card_values, inverted_card_suits, flipped_card)
 
     # Round loop
     who_plays = 2 if (total_b + total_p) % 2 == 0 else 1
@@ -66,12 +81,12 @@ while total_p < 12 and total_b < 12:
             # Who plays first
             if draw_counter <= 2:
                 if who_plays == 1:
-                    result = bot_plays(inverted_card_values, inverted_card_suits, bot_cards, player_cards, draw=True) \
-                        if conditional == 'draw' else bot_plays(inverted_card_values, inverted_card_suits, bot_cards,
+                    result = bot_plays(sorted_card_values, inverted_card_suits, bot_cards, player_cards, draw=True) \
+                        if conditional == 'draw' else bot_plays(sorted_card_values, inverted_card_suits, bot_cards,
                                                                 player_cards)
                     who_plays = 2
                 else:
-                    result = player_plays(inverted_card_values, inverted_card_suits, bot_cards, player_cards)
+                    result = player_plays(sorted_card_values, inverted_card_suits, bot_cards, player_cards)
                     who_plays = 1
 
             # First result analysis
@@ -107,7 +122,7 @@ while total_p < 12 and total_b < 12:
 
             # if x win first, x begins next round --> second result analysis
             if conditional == 'p starts':
-                result = player_plays(inverted_card_values, inverted_card_suits, bot_cards, player_cards)
+                result = player_plays(sorted_card_values, inverted_card_suits, bot_cards, player_cards)
                 if result == 1 or result == 2:
                     round_p += 1
                     total_p += 1
@@ -117,7 +132,7 @@ while total_p < 12 and total_b < 12:
                     round_b += 1
                     conditional = 'play biggest'
             elif conditional == 'b starts':
-                result = bot_plays(inverted_card_values, inverted_card_suits, bot_cards, player_cards, did_first=True)
+                result = bot_plays(sorted_card_values, inverted_card_suits, bot_cards, player_cards, did_first=True)
                 if result == 2 or result == 3:
                     round_b += 1
                     total_b += 1
@@ -129,7 +144,7 @@ while total_p < 12 and total_b < 12:
 
             # if x win and after y win -- > get higher card // if draw --> x win because he did first
             else:
-                result = compare_highest_cards(inverted_card_values, inverted_card_suits, bot_cards, player_cards)
+                result = compare_highest_cards(sorted_card_values, inverted_card_suits, bot_cards, player_cards)
                 if result == 1:
                     round_p += 1
                     total_p += 1

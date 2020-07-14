@@ -3,12 +3,12 @@ from time import sleep
 
 
 # Get the cards from each player
-def get_cards(global_card_values, global_card_suits, flipped_card=0):
+def get_cards(comparative_card_list, global_card_suits, flipped_card=0):
 
     # Get random cards ans suits
     entity_card_values = [randint(1, 10) for _ in range(0, 3)]
     entity_card_values.sort()
-    '''
+
     # Reorganize the bot's hand to a order of power (shackle included)
     shackle_number = flipped_card + 1 if flipped_card <= 9 else 1
     for card in entity_card_values:
@@ -17,25 +17,28 @@ def get_cards(global_card_values, global_card_suits, flipped_card=0):
             entity_card_values.remove(card)
             entity_card_values.insert(i, shackle_number)
             i -= 1
-    '''
     entity_card_suits = [randint(1, 4) for _ in range(0, 3)]
     entity_card_suits.sort()
     entity_cards = [0, 0, 0]
 
     # Compare numbers with dictionary indexes
     for i in range(len(entity_cards)):
-        entity_cards[i] = f'{global_card_values[entity_card_values[i]]} de {global_card_suits[entity_card_suits[i]]}'
+        entity_cards[i] = f'{comparative_card_list[entity_card_values[i]]} de {global_card_suits[entity_card_suits[i]]}'
     return entity_cards
 
 
 # Bot "IA"
-def bot_plays(global_card_values, global_card_suits, bot_cards, player_cards, comparative_card=None,
+def bot_plays(comparative_card_list, global_card_suits, bot_cards, player_cards, comparative_card=None,
               did_first=None, draw=None):
 
+    print(f'\n{bot_cards}')
+
     # Bot "IA" variables
-    comparative_list = list(global_card_values.values())
-    comparative_list.reverse()
-    enemy_power = comparative_list.index(comparative_card.split()[0]) if comparative_card else 0
+
+    print(comparative_card_list)
+    exit()
+
+    enemy_power = comparative_card_list.index(comparative_card.split()[0]) if comparative_card else 0
     possible_card = bot_cards[0]
     winnable_cards = []
     consequence = 0
@@ -50,7 +53,7 @@ def bot_plays(global_card_values, global_card_suits, bot_cards, player_cards, co
         print(f'Eu jogo: {chosen_card}')
         sleep(1)
         bot_cards.remove(chosen_card)
-        return player_plays(global_card_values, global_card_suits, bot_cards, player_cards, chosen_card)
+        return player_plays(comparative_card_list, global_card_suits, bot_cards, player_cards, chosen_card)
 
     # If the player has one or two cards...
     else:
@@ -60,13 +63,13 @@ def bot_plays(global_card_values, global_card_suits, bot_cards, player_cards, co
         if not did_first:
             for card in bot_cards:
                 if not draw:
-                    if comparative_list.index(card.split()[0]) > enemy_power:
+                    if comparative_card_list.index(card.split()[0]) > enemy_power:
                         winnable_cards.append(card)
-                    elif comparative_list.index(card.split()[0]) == enemy_power:
-                        if comparative_list.index(bot_cards[-1].split()[0]) >= 8:
+                    elif comparative_card_list.index(card.split()[0]) == enemy_power:
+                        if comparative_card_list.index(bot_cards[-1].split()[0]) >= 8:
                             winnable_cards.append(card)
                 else:
-                    if comparative_list.index(card.split()[0]) > enemy_power:
+                    if comparative_card_list.index(card.split()[0]) > enemy_power:
                         winnable_cards.append(card)
             if len(winnable_cards) >= 1:
                 possible_card = winnable_cards[0]
@@ -76,33 +79,31 @@ def bot_plays(global_card_values, global_card_suits, bot_cards, player_cards, co
             bot_cards.remove(possible_card)
             if len(player_cards) == len(bot_cards):
                 sleep(0.5)
-                if comparative_list.index(comparative_card.split()[0]) > \
-                        comparative_list.index(possible_card.split()[0]):
+                if comparative_card_list.index(comparative_card.split()[0]) > \
+                        comparative_card_list.index(possible_card.split()[0]):
                     consequence = 1
                     print('\nVocê venceu.\n')
-                elif comparative_list.index(comparative_card.split()[0]) == \
-                        comparative_list.index(possible_card.split()[0]):
+                elif comparative_card_list.index(comparative_card.split()[0]) == \
+                        comparative_card_list.index(possible_card.split()[0]):
                     consequence = 2
                     print('\n --- Temos um empate! ---\n')
                 else:
                     consequence = 3
                     print('\nEu venci.\n')
             else:
-                return player_plays(global_card_values, global_card_suits, bot_cards, player_cards, possible_card)
+                return player_plays(comparative_card_list, global_card_suits, bot_cards, player_cards, possible_card)
 
         # If he did it first, he'll eliminate the weakest
         if did_first:
             chosen_card = bot_cards[0]
             print(f'Eu jogo: {chosen_card}')  # Continuar daqui
             bot_cards.remove(chosen_card)
-            return player_plays(global_card_values, global_card_suits, bot_cards, player_cards, chosen_card)
+            return player_plays(comparative_card_list, global_card_suits, bot_cards, player_cards, chosen_card)
     return consequence
 
 
-def player_plays(global_card_values, global_card_suits, bot_cards, player_cards, last_card=None):
+def player_plays(comparative_card_list, global_card_suits, bot_cards, player_cards, last_card=None):
     print('\nSua vez...')
-    comparative_list = list(global_card_values.values())
-    comparative_list.reverse()
     card_opt, act_opt = [1, 2, 3], [0, 9]
     consequence = 0
     while True:
@@ -120,19 +121,19 @@ def player_plays(global_card_values, global_card_suits, bot_cards, player_cards,
                     player_cards.pop(card - 1)
                     if len(player_cards) == len(bot_cards):
                         sleep(0.5)
-                        if comparative_list.index(played_card.split()[0]) > \
-                                comparative_list.index(last_card.split()[0]):
+                        if comparative_card_list.index(played_card.split()[0]) > \
+                                comparative_card_list.index(last_card.split()[0]):
                             consequence = 1
                             print('\nVocê venceu.\n')
-                        elif comparative_list.index(played_card.split()[0]) == \
-                                comparative_list.index(last_card.split()[0]):
+                        elif comparative_card_list.index(played_card.split()[0]) == \
+                                comparative_card_list.index(last_card.split()[0]):
                             consequence = 2
                             print('\n--- Temos um empate! ---\n')
                         else:
                             consequence = 3
                             print('\nEu venci.\n')
                     else:
-                        return bot_plays(global_card_values, global_card_suits, bot_cards, player_cards, played_card)
+                        return bot_plays(comparative_card_list, global_card_suits, bot_cards, player_cards, played_card)
                     break
             return consequence
         except(ValueError, IndexError, ZeroDivisionError):
@@ -148,11 +149,9 @@ def get_highest_card(cards, comparative):
     return highest
 
 
-def compare_highest_cards(global_card_values, global_card_suits, bot_cards, player_cards):
-    comparative_list = list(global_card_values.values())
-    comparative_list.reverse()
-    bot_biggest = get_highest_card(bot_cards, comparative_list)
-    player_biggest = get_highest_card(player_cards, comparative_list)
+def compare_highest_cards(comparative_card_list, global_card_suits, bot_cards, player_cards):
+    bot_biggest = get_highest_card(bot_cards, comparative_card_list)
+    player_biggest = get_highest_card(player_cards, comparative_card_list)
     if player_biggest > bot_biggest:
         print('Como a sua última carta é a mais forte, você ganha!\n')
         return 1
