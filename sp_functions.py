@@ -3,27 +3,19 @@ from time import sleep
 
 
 # Get the cards from each player
-def get_cards(comparative_card_list, global_card_suits, flipped_card=0):
+def get_cards(comparative_card_list, global_card_suits):
 
     # Get random cards ans suits
-    entity_card_values = [randint(1, 10) for _ in range(0, 3)]
+    entity_card_values = [randint(0, 9) for _ in range(0, 3)]
     entity_card_values.sort()
-
-    # Reorganize the bot's hand to a order of power (shackle included)
-    shackle_number = flipped_card + 1 if flipped_card <= 9 else 1
-    for card in entity_card_values:
-        i = 2
-        if card == shackle_number:
-            entity_card_values.remove(card)
-            entity_card_values.insert(i, shackle_number)
-            i -= 1
     entity_card_suits = [randint(1, 4) for _ in range(0, 3)]
     entity_card_suits.sort()
     entity_cards = [0, 0, 0]
 
     # Compare numbers with dictionary indexes
     for i in range(len(entity_cards)):
-        entity_cards[i] = f'{comparative_card_list[entity_card_values[i]]} de {global_card_suits[entity_card_suits[i]]}'
+        entity_cards[i] = f'{comparative_card_list[entity_card_values[i]]} de ' \
+                          f'{global_card_suits[entity_card_suits[i]]}'
     return entity_cards
 
 
@@ -34,10 +26,6 @@ def bot_plays(comparative_card_list, global_card_suits, bot_cards, player_cards,
     print(f'\n{bot_cards}')
 
     # Bot "IA" variables
-
-    print(comparative_card_list)
-    exit()
-
     enemy_power = comparative_card_list.index(comparative_card.split()[0]) if comparative_card else 0
     possible_card = bot_cards[0]
     winnable_cards = []
@@ -69,8 +57,7 @@ def bot_plays(comparative_card_list, global_card_suits, bot_cards, player_cards,
                         if comparative_card_list.index(bot_cards[-1].split()[0]) >= 8:
                             winnable_cards.append(card)
                 else:
-                    if comparative_card_list.index(card.split()[0]) > enemy_power:
-                        winnable_cards.append(card)
+                    possible_card = bot_cards[-1]
             if len(winnable_cards) >= 1:
                 possible_card = winnable_cards[0]
                 print(f'Eu jogo: {possible_card}')

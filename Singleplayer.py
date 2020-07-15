@@ -1,33 +1,35 @@
 from sp_functions import *
 
-card_values = {
-    '3': 10,
-    '2': 9,
-    'A': 8,
-    'K': 7,
-    'J': 6,
-    'Q': 5,
-    '7': 4,
-    '6': 3,
-    '5': 2,
-    '4': 1
-}
-
-card_suits = {
-    'Paus': 4,
-    'Copas': 3,
-    'Espadas': 2,
-    'Ouros': 1
-}
-
 # Game loop
 total_p = total_b = who_plays = result = 0
 while total_p < 12 and total_b < 12:
-    comparative_len = len(f'--- Placar geral: {total_p} x {total_b} ---')
-    print('-' * comparative_len)
-    print(f'--- Placar geral: {total_p} x {total_b} ---')
-    print('-' * comparative_len)
-    print('Nova rodada\n')
+
+    card_values = {
+        '3': 10,
+        '2': 9,
+        'A': 8,
+        'K': 7,
+        'J': 6,
+        'Q': 5,
+        '7': 4,
+        '6': 3,
+        '5': 2,
+        '4': 1
+    }
+
+    card_suits = {
+        'Paus': 4,
+        'Copas': 3,
+        'Espadas': 2,
+        'Ouros': 1
+    }
+
+    # Scores
+    score_text = f'--- Placar geral: {total_p} x {total_b} ---'
+    print('-' * len(score_text))
+    print(score_text)
+    print('-' * len(score_text))
+    print(' ' * (len(score_text) - 20), 'Nova rodada\n')
 
     # Game variables
     round_p = round_b = draw_counter = 0
@@ -54,11 +56,9 @@ while total_p < 12 and total_b < 12:
         sorted_card_values.append(list(inverted_card_values.values())[list(inverted_card_values.keys()).index(key)])
     inverted_card_suits = {v: k for k, v in card_suits.items()}
 
-    print(sorted_card_values[10])  # Issue here
-
     # Distributing the cards
     player_cards = get_cards(sorted_card_values, inverted_card_suits)
-    bot_cards = get_cards(sorted_card_values, inverted_card_suits, flipped_card)
+    bot_cards = get_cards(sorted_card_values, inverted_card_suits)
 
     # Round loop
     who_plays = 2 if (total_b + total_p) % 2 == 0 else 1
@@ -79,7 +79,7 @@ while total_p < 12 and total_b < 12:
         if round_p == round_b == 0:
 
             # Who plays first
-            if draw_counter <= 2:
+            if draw_counter < 2:
                 if who_plays == 1:
                     result = bot_plays(sorted_card_values, inverted_card_suits, bot_cards, player_cards, draw=True) \
                         if conditional == 'draw' else bot_plays(sorted_card_values, inverted_card_suits, bot_cards,
