@@ -9,7 +9,7 @@ while total_p < 12 and total_b < 12:
 
     # Scores
     score_text = f'--- Placar geral: {total_p} x {total_b} ---'
-    print('')
+    print('')  # Sadly necessary
     print('-' * len(score_text))
     print(score_text)
     print('-' * len(score_text))
