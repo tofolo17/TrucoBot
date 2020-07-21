@@ -7,13 +7,7 @@ while total_p < 12 and total_b < 12:
     card_values = ['4', '5', '6', '7', 'Q', 'J', 'K', 'A', '2', '3']
     card_suits = ['Ouros', 'Espadas', 'Copas', 'Paus']
 
-    # Scores
-    score_text = f'--- Placar geral: {total_p} x {total_b} ---'
-    print('')  # Sadly necessary
-    print('-' * len(score_text))
-    print(score_text)
-    print('-' * len(score_text))
-    print(' ' * (len(score_text) - 20), 'Nova rodada\n')
+    initial_text(f"--- Placar geral: {total_p} x {total_b} ---", 'Nova rodada\n', 20)  # Scores
 
     # Flipped card and shackle
     flipped_card = randint(0, 9)
@@ -77,7 +71,7 @@ while total_p < 12 and total_b < 12:
                 draw_counter += 1
                 if draw_counter == 2:
                     conditional = 'play biggest'
-            else:
+            elif result == 3:
                 if draw_counter == 1:
                     round_b, total_b = get_points(round_b, 2, total_b)
                     print('\nEmpatamos a primeira, mas eu levei a segunda. Logo, eu ganho!')
@@ -86,6 +80,8 @@ while total_p < 12 and total_b < 12:
                     round_b = get_points(round_b, 1)
                     print('\nEu venci')
                 conditional = 'b did first'
+            else:
+                round_b, total_b = get_points(round_b, 2, total_b)
 
         # Second conditional
         else:
@@ -97,9 +93,11 @@ while total_p < 12 and total_b < 12:
                     round_p, total_p = get_points(round_p, 1, total_p)
                     if result == 2:
                         print('\nComo você fez a primeira, e agora empatamos, você ganha!')
-                else:
+                elif result == 3:
                     round_b = get_points(round_b, 1)
                     conditional = 'play biggest'
+                else:
+                    round_b, total_b = get_points(round_b, 2, total_b)
             elif conditional == 'b did first':
                 result = bot_plays(card_values, card_suits, bot_cards, player_cards, did_first=True,
                                    conditional=conditional)
@@ -107,9 +105,11 @@ while total_p < 12 and total_b < 12:
                     round_b, total_b = get_points(round_b, 1, total_b)
                     if result == 2:
                         print('\nComo eu fiz a primeira, e agora empatamos, eu ganho!')
-                else:
+                elif result == 3:
                     round_p = get_points(round_p, 1)
                     conditional = 'play biggest'
+                else:
+                    round_b, total_b = get_points(round_b, 2, total_b)
 
             # if x win and after y win -- > get higher card // if draw --> x win because he did first
             else:
