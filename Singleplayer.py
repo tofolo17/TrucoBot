@@ -64,12 +64,11 @@ while total_p < 12 and total_b < 12:
             # First result analysis
             if result == 1:
                 if draw_counter == 1:
-                    round_p += 2
-                    total_p += 1
+                    round_p, total_p = get_points(round_p, 2, total_p)
                     print('\nEmpatamos a primeira, mas você levou a segunda. Logo, você ganha!')
                 else:
                     first_score = 'p'
-                    round_p += 1
+                    round_p = get_points(round_p, 1)
                     print('\nVocê venceu')
                 conditional = 'p did first'
             elif result == 2:
@@ -80,12 +79,11 @@ while total_p < 12 and total_b < 12:
                     conditional = 'play biggest'
             else:
                 if draw_counter == 1:
-                    round_b += 2
-                    total_b += 1
+                    round_b, total_b = get_points(round_b, 2, total_b)
                     print('\nEmpatamos a primeira, mas eu levei a segunda. Logo, eu ganho!')
                 else:
                     first_score = 'b'
-                    round_b += 1
+                    round_b = get_points(round_b, 1)
                     print('\nEu venci')
                 conditional = 'b did first'
 
@@ -96,23 +94,21 @@ while total_p < 12 and total_b < 12:
             if conditional == 'p did first':
                 result = player_plays(card_values, card_suits, bot_cards, player_cards, conditional=conditional)
                 if result == 1 or result == 2:
-                    round_p += 1
-                    total_p += 1
+                    round_p, total_p = get_points(round_p, 1, total_p)
                     if result == 2:
                         print('\nComo você fez a primeira, e agora empatamos, você ganha!')
                 else:
-                    round_b += 1
+                    round_b = get_points(round_b, 1)
                     conditional = 'play biggest'
             elif conditional == 'b did first':
                 result = bot_plays(card_values, card_suits, bot_cards, player_cards, did_first=True,
                                    conditional=conditional)
                 if result == 2 or result == 3:
-                    round_b += 1
-                    total_b += 1
+                    round_b, total_b = get_points(round_b, 1, total_b)
                     if result == 2:
                         print('\nComo eu fiz a primeira, e agora empatamos, eu ganho!')
                 else:
-                    round_p += 1
+                    round_p = get_points(round_p, 1)
                     conditional = 'play biggest'
 
             # if x win and after y win -- > get higher card // if draw --> x win because he did first
@@ -121,17 +117,14 @@ while total_p < 12 and total_b < 12:
                     print(f'Sua: {player_cards[0][0]} de {player_cards[0][1]} '
                           f'x Minha: {bot_cards[0][0]} de {bot_cards[0][1]}')
                     print('Como a sua carta mais forte é maior, você ganha!')
-                    round_p += 2
-                    total_p += 1
+                    round_p, total_p = get_points(round_p, 2, total_p)
                 elif card_values.index(player_cards[-1][0]) == card_values.index(bot_cards[-1][0]):
                     print('Empatamos! Quem pontuou primeiro vence!')
                     if first_score == 'p':
-                        round_p += 2
-                        total_p += 1
+                        round_p, total_p = get_points(round_p, 2, total_p)
                         print('E como essa pessoa foi você, você ganha!')
                     elif first_score == 'b':
-                        round_b += 2
-                        total_b += 1
+                        round_b, total_b = get_points(round_b, 2, total_b)
                         print('E como eu fui essa pessoa (ou máquina), eu ganho!')
                     else:
                         print('Ninguem pontuou!')
@@ -140,5 +133,4 @@ while total_p < 12 and total_b < 12:
                     print(f'Sua: {player_cards[0][0]} de {player_cards[0][1]} '
                           f'x Minha: {bot_cards[0][0]} de {bot_cards[0][1]}')
                     print('Como a minha carta mais forte é maior, eu ganho!')
-                    round_b += 2
-                    total_b += 1
+                    round_b, total_b = get_points(round_b, 2, total_b)

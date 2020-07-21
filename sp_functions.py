@@ -18,6 +18,27 @@ def get_cards(comparative_card_list, global_card_suits):
     return entity_cards
 
 
+# Return the result of a turn
+def compare_cards(comparative_card_list, card_1, card_2):
+    if comparative_card_list.index(card_1[0]) > comparative_card_list.index(card_2[0]):
+        turn_result = 1
+    elif comparative_card_list.index(card_1[0]) == comparative_card_list.index(card_2[0]):
+        turn_result = 2
+    else:
+        turn_result = 3
+    return turn_result
+
+
+# Increase match points
+def get_points(this_round, points, total=None):
+    new_r = this_round + points
+    if total is not None:
+        new_t = total + 1
+        return new_r, new_t
+    else:
+        return new_r
+
+
 # Bot "IA"
 def bot_plays(comparative_card_list, comparative_suits_list, bot_cards, player_cards, conditional,
               comparative_card=None, did_first=None):
@@ -66,12 +87,7 @@ def bot_plays(comparative_card_list, comparative_suits_list, bot_cards, player_c
             bot_cards.remove(possible_card)
             if len(player_cards) == len(bot_cards):
                 sleep(0.5)
-                if comparative_card_list.index(comparative_card[0]) > comparative_card_list.index(possible_card[0]):
-                    consequence = 1
-                elif comparative_card_list.index(comparative_card[0]) == comparative_card_list.index(possible_card[0]):
-                    consequence = 2
-                else:
-                    consequence = 3
+                consequence = compare_cards(comparative_card_list, comparative_card, possible_card)
             else:
                 return player_plays(comparative_card_list, comparative_suits_list, bot_cards, player_cards,
                                     conditional=conditional, last_card=possible_card)
@@ -86,6 +102,7 @@ def bot_plays(comparative_card_list, comparative_suits_list, bot_cards, player_c
     return consequence
 
 
+# Player choosing the card
 def player_plays(comparative_card_list, global_card_suits, bot_cards, player_cards, conditional, last_card=None):
     print('\nSua vez...')
     card_opt, act_opt = [1, 2, 3], [0, 9]
@@ -105,12 +122,7 @@ def player_plays(comparative_card_list, global_card_suits, bot_cards, player_car
                     player_cards.pop(option - 1)
                     if len(player_cards) == len(bot_cards):
                         sleep(0.5)
-                        if comparative_card_list.index(chosen_card[0]) > comparative_card_list.index(last_card[0]):
-                            consequence = 1
-                        elif comparative_card_list.index(chosen_card[0]) == comparative_card_list.index(last_card[0]):
-                            consequence = 2
-                        else:
-                            consequence = 3
+                        consequence = compare_cards(comparative_card_list, chosen_card, last_card)
                     else:
                         return bot_plays(comparative_card_list, global_card_suits, bot_cards, player_cards,
                                          conditional=conditional, comparative_card=chosen_card)
