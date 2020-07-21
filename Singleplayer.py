@@ -4,6 +4,8 @@ from sp_functions import *
 total_p = total_b = who_plays = result = 0
 while total_p < 12 and total_b < 12:
 
+    # Card variables
+    cards_already_distributed = []
     card_values = ['4', '5', '6', '7', 'Q', 'J', 'K', 'A', '2', '3']
     card_suits = ['Ouros', 'Espadas', 'Copas', 'Paus']
 
@@ -21,8 +23,9 @@ while total_p < 12 and total_b < 12:
             card_values.append(shackle)
 
     # Distributing the cards
-    player_cards = get_cards(card_values, card_suits)
-    bot_cards = get_cards(card_values, card_suits)
+    player_cards, cards_already_distributed = get_cards(card_values, card_suits, cards_already_distributed,
+                                                        first_to_get=True)
+    bot_cards = get_cards(card_values, card_suits, cards_already_distributed)
 
     # Game variables
     round_p = round_b = draw_counter = 0

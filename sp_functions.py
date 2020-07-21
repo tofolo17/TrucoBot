@@ -12,19 +12,23 @@ def initial_text(text, bellow_text, corrector):
 
 
 # Get the cards from each player
-def get_cards(comparative_card_list, global_card_suits):
+def get_cards(comparative_card_list, global_card_suits, cards_already_distributed, first_to_get=False):
 
-    # Get random cards ans suits
+    # Get random cards and suits
     entity_card_values = [randint(0, 9) for _ in range(0, 3)]
-    entity_card_values.sort()
     entity_card_suits = [randint(0, 3) for _ in range(0, 3)]
-    entity_card_suits.sort()
+    for i in range(0, 3):
+        while [entity_card_values[i], entity_card_suits[i]] in cards_already_distributed:
+            entity_card_values[i] = randint(0, 9)
+            entity_card_suits[i] = randint(0, 3)
+        cards_already_distributed.append([entity_card_values[i], entity_card_suits[i]])
+    entity_card_suits.sort(), entity_card_values.sort()
     entity_cards = [0, 0, 0]
 
-    # Compare numbers with dictionary indexes
+    # Relate numbers with dictionary indexes
     for i in range(len(entity_cards)):
         entity_cards[i] = [comparative_card_list[entity_card_values[i]], global_card_suits[entity_card_suits[i]]]
-    return entity_cards
+    return entity_cards if first_to_get is False else entity_cards, cards_already_distributed
 
 
 # Return the result of a turn
