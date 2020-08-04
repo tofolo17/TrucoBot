@@ -113,8 +113,8 @@ def bot_plays(comparative_card_list, comparative_suits_list, bot_cards, player_c
 
         # If he did it first, he'll eliminate the weakest
         else:
-            chosen_card = bot_cards[0]
-            print(f'Eu jogo: {chosen_card[0]} de {chosen_card[1]}')
+            chosen_card = ['hide', 'Ouros']
+            print(f'Eu jogo: # de #####')
             bot_cards.remove(bot_cards[0])
             return player_plays(comparative_card_list, comparative_suits_list, bot_cards, player_cards,
                                 conditional=conditional, last_card=chosen_card)
@@ -124,7 +124,7 @@ def bot_plays(comparative_card_list, comparative_suits_list, bot_cards, player_c
 # Player choosing the card
 def player_plays(comparative_card_list, comparative_suits_list, bot_cards, player_cards, conditional, last_card=None):
     print('\nSua vez...')
-    card_opt, hide_opt = ['1', '2', '3'], ['1e', '2e', '3e']  # don't forgot '0'
+    card_opt, hide_opt = ['1', '2', '3'], ['1e', '2e', '3e']  # don't forgot '0' and '9'
     consequence = 0
     while True:
         try:
