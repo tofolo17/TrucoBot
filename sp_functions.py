@@ -12,14 +12,14 @@ def initial_text(text, bellow_text, corrector):
 
 
 # Get the cards from each player
-def get_cards(comparative_card_list, global_card_suits, cards_already_distributed, first_to_get=False):
+def get_cards(global_card_list, global_card_suits, cards_already_distributed):
 
     # Get random cards and suits
-    entity_card_values = [randint(0, 9) for _ in range(0, 3)]
+    entity_card_values = [randint(1, 10) for _ in range(0, 3)]
     entity_card_suits = [randint(0, 3) for _ in range(0, 3)]
     for i in range(0, 3):
         while [entity_card_values[i], entity_card_suits[i]] in cards_already_distributed:
-            entity_card_values[i] = randint(0, 9)
+            entity_card_values[i] = randint(1, 10)
             entity_card_suits[i] = randint(0, 3)
         cards_already_distributed.append([entity_card_values[i], entity_card_suits[i]])
     entity_card_suits.sort(), entity_card_values.sort()
@@ -27,8 +27,8 @@ def get_cards(comparative_card_list, global_card_suits, cards_already_distribute
 
     # Relate numbers with dictionary indexes
     for i in range(len(entity_cards)):
-        entity_cards[i] = [comparative_card_list[entity_card_values[i]], global_card_suits[entity_card_suits[i]]]
-    return entity_cards if first_to_get is False else entity_cards, cards_already_distributed
+        entity_cards[i] = [global_card_list[entity_card_values[i]], global_card_suits[entity_card_suits[i]]]
+    return entity_cards, cards_already_distributed
 
 
 # Return the result of a turn
@@ -93,7 +93,7 @@ def bot_plays(comparative_card_list, comparative_suits_list, bot_cards, player_c
                     elif comparative_card_list.index(card[0]) == player_card_power:
                         if player_card_power == 9 and comparative_suits_list.index(card[1]) > player_suit_power:
                             playable_cards.append(card)
-                        elif comparative_card_list.index(bot_cards[-1][0]) >= 8:
+                        elif comparative_card_list.index(bot_cards[-1][0]) >= 9:
                             playable_cards.append(card)
                 else:
                     possible_card = bot_cards[-1]
@@ -124,25 +124,28 @@ def bot_plays(comparative_card_list, comparative_suits_list, bot_cards, player_c
 # Player choosing the card
 def player_plays(comparative_card_list, comparative_suits_list, bot_cards, player_cards, conditional, last_card=None):
     print('\nSua vez...')
-    card_opt, act_opt = [1, 2, 3], [0, 9]
+    card_opt, hide_opt = ['1', '2', '3'], ['1e', '2e', '3e']  # don't forgot '0'
     consequence = 0
     while True:
         try:
-            player_choice = int(input('Sua opção: '))
+            player_choice = input('Sua opção: ')
             while True:
-                if player_choice in card_opt + act_opt and player_choice != 0:  # the last is provisional
+                if player_choice in card_opt + hide_opt:
                     break
                 else:
                     _ = 1/0
-            if player_choice == 9:
+            if player_choice == '9':
                 print(f'\nVocê foge!')
                 consequence = 9
             else:
-                for option in card_opt:
+                for option in card_opt + hide_opt:
                     if option == player_choice:
-                        chosen_card = player_cards[option - 1]
-                        print(f'Você jogou: {chosen_card[0]} de {chosen_card[1]}')
-                        player_cards.pop(option - 1)
+                        chosen_card = player_cards[card_opt.index(option)] if player_choice in card_opt else \
+                            ['hide', 'Ouros']
+                        print(f'Você jogou: {chosen_card[0]} de {chosen_card[1]}') if player_choice in card_opt else \
+                            print('\nVocê jogou: # de #####')
+                        player_cards.pop(card_opt.index(option)) if player_choice in card_opt else \
+                            player_cards.pop(hide_opt.index(option))
                         if len(player_cards) == len(bot_cards):
                             sleep(0.5)
                             consequence = compare_cards(comparative_card_list, comparative_suits_list,
@@ -152,5 +155,5 @@ def player_plays(comparative_card_list, comparative_suits_list, bot_cards, playe
                                              conditional=conditional, comparative_card=chosen_card)
                         break
             return consequence
-        except(ValueError, IndexError, ZeroDivisionError):
-            print('Inválido. Tente novamente.')
+        except(ValueError, IndexError, ZeroDivisionError) as e:
+            print('Inválido. Tente novamente. ', e)

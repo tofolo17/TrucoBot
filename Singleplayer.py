@@ -6,13 +6,13 @@ while total_p < 12 and total_b < 12:
 
     # Card variables
     cards_already_distributed = []
-    card_values = ['4', '5', '6', '7', 'Q', 'J', 'K', 'A', '2', '3']
+    card_values = ['hide', '4', '5', '6', '7', 'Q', 'J', 'K', 'A', '2', '3']
     card_suits = ['Ouros', 'Espadas', 'Copas', 'Paus']
 
     initial_text(f"--- Placar geral: {total_p} x {total_b} ---", 'Nova rodada\n', 20)  # Scores
 
     # Flipped card and shackle
-    flipped_card = randint(0, 9)
+    flipped_card = randint(1, 10)
     print(f'Vira: {card_values[flipped_card]} de {card_suits[randint(0, 3)]}')
     shackle = card_values[0] if flipped_card == 9 else card_values[flipped_card + 1]
 
@@ -23,9 +23,8 @@ while total_p < 12 and total_b < 12:
             card_values.append(shackle)
 
     # Distributing the cards
-    player_cards, cards_already_distributed = get_cards(card_values, card_suits, cards_already_distributed,
-                                                        first_to_get=True)
-    bot_cards = get_cards(card_values, card_suits, cards_already_distributed)
+    player_cards, cards_already_distributed = get_cards(card_values, card_suits, cards_already_distributed)
+    bot_cards, cards_already_distributed = get_cards(card_values, card_suits, cards_already_distributed)
 
     # Game variables
     round_p = round_b = draw_counter = 0
